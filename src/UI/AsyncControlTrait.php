@@ -41,7 +41,7 @@ trait AsyncControlTrait
 	}
 
 
-	public function renderAsync(string $linkMessage = NULL, array $linkAttributes = NULL)
+	public function renderAsync(bool $useLink = true, string $linkMessage = NULL, array $linkAttributes = NULL)
 	{
 		if (
 			$this instanceof Control
@@ -49,7 +49,7 @@ trait AsyncControlTrait
 			&& strpos((string) $this->getPresenter()->getParameter(Presenter::SIGNAL_KEY), sprintf('%s-', $this->getUniqueId())) !== 0
 		) {
 			$template = $this->createTemplate();
-			if ($template instanceof Template) {
+			if ($template instanceof Template && $useLink) {
 				$template->add('link', new AsyncControlLink($linkMessage, $linkAttributes));
 			}
 			$template->setFile(__DIR__ . '/templates/asyncLoadLink.latte');
