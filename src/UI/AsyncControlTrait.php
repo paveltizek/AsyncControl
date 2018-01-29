@@ -41,19 +41,21 @@ trait AsyncControlTrait
 	}
 
 
-	public function renderAsync(bool $useLink = true, string $linkMessage = NULL, array $linkAttributes = NULL)
+	public function renderAsync(bool $useLink = false, string $linkMessage = NULL, array $linkAttributes = NULL)
 	{
 		if (
 			$this instanceof Control
 			&& $this->getPresenter()->getParameter('_escaped_fragment_') === NULL
 			&& strpos((string) $this->getPresenter()->getParameter(Presenter::SIGNAL_KEY), sprintf('%s-', $this->getUniqueId())) !== 0
 		) {
-			$template = $this->createTemplate();
-			if ($template instanceof Template && $useLink) {
-				$template->add('link', new AsyncControlLink($linkMessage, $linkAttributes));
+			if ($useLink) {
+				$template = $this->createTemplate();
+				if ($template instanceof Template) {
+					$template->add('link', new AsyncControlLink($linkMessage, $linkAttributes));
+				}
+				$template->setFile(__DIR__ . '/templates/asyncLoadLink.latte');
+				$template->render();
 			}
-			$template->setFile(__DIR__ . '/templates/asyncLoadLink.latte');
-			$template->render();
 		} elseif (is_callable($this->asyncRenderer)) {
 			call_user_func($this->asyncRenderer);
 		} else {
